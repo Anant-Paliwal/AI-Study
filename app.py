@@ -15,7 +15,7 @@ from flask import request, redirect, url_for, flash
 import re 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///exam_prep1.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://study_f5o4_user:gdGBoOOzT8NzlBigc5IbHm5RsG0ByOjt@dpg-cvvm1si4d50c739gpnq0-a.virginia-postgres.render.com/study_f5o4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
@@ -146,7 +146,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(255))
     is_admin = db.Column(db.Boolean, default=False)  # Flag to identify admin users
     current_track = db.Column(db.String(20), default='6-month')  # '6-month' or '3-month'
     current_day = db.Column(db.Integer, default=1)
@@ -2427,8 +2427,8 @@ if __name__ == '__main__':
         db.create_all()  # Create tables if not exists
         # Create admin user if not exists
         if not User.query.filter_by(username='admin').first():
-            admin = User(username='admin', email='admin@gmail.com', is_admin=True)
-            admin.set_password('admin123')
+            admin = User(username='admin', email='anant31122000@gmail.com', is_admin=True)
+            admin.set_password('Acool@428')
             db.session.add(admin)
             db.session.commit()
     app.run(debug=True)
