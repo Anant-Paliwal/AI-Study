@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Lessons</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+            --success-color: #1cc88a;
+            --danger-color: #e74a3b;
+        }
+        
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 2rem;
+        }
+        
+        .card-header {
+            background-color: #f8f9fc;
+            border-bottom: 1px solid #e3e6f0;
+            font-weight: bold;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .lesson-list-item {
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+        }
+        
+        .lesson-list-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        
+        .lesson-actions {
+            opacity: 0.7;
+            transition: all 0.2s;
+        }
+        
+        .lesson-list-item:hover .lesson-actions {
+            opacity: 1;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .custom-file-label::after {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-day {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.6rem;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #4e73df;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .back-link:hover {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .back-link i {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Page Header -->
+                <div class="page-header text-center mb-4">
+                    <h1 class="display-4"><i class="fas fa-book-open mr-2"></i>Manage Lessons</h1>
+                    <p class="lead">{{ subject.name }}</p>
+                </div>
+                
+                <!-- Back to Admin Panel Link -->
+                <a href="{{ url_for('admin_panel') }}" class="back-link mb-4">
+                    <i class="fas fa-arrow-left"></i> Back to Admin Panel
+                </a>
+                
+                <!-- Main Content Row -->
+                <div class="row">
+                    <!-- Add New Lesson Card -->
+                    <div class="col-lg-5 mb-4">
+                        <div class="card shadow">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-plus-circle mr-2"></i>Add New Lesson
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ url_for('manage_lessons', subject_id=subject.id) }}" method="POST" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label for="title"><i class="fas fa-heading mr-1"></i> Lesson Title:</label>
+                                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter lesson title" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="day_number"><i class="fas fa-calendar-day mr-1"></i> Day Number:</label>
+                                        <input type="number" class="form-control" id="day_number" name="day_number" value="1" min="1" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="pdf_file"><i class="fas fa-file-pdf mr-1"></i> Lesson PDF:</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="pdf_file" name="pdf_file" accept=".pdf" required>
+                                            <label class="custom-file-label" for="pdf_file">Choose PDF file</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="mind_map"><i class="fas fa-project-diagram mr-1"></i> Mind Map (Optional):</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="mind_map" name="mind_map" accept="image/png,image/jpeg">
+                                            <label class="custom-file-label" for="mind_map">Choose image file</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="video_url"><i class="fas fa-video mr-1"></i> Video URL (Optional):</label>
+                                        <input type="text" class="form-control" id="video_url" name="video_url" placeholder="Enter YouTube or video URL">
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="fas fa-plus-circle mr-1"></i> Add Lesson
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Existing Lessons Card -->
+                    <div class="col-lg-7">
+                        <div class="card shadow">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fas fa-list mr-2"></i>Existing Lessons
+                                </h6>
+                                <span class="badge badge-pill badge-primary">{{ lessons|length }} lessons</span>
+                            </div>
+                            <div class="card-body p-0">
+                                {% if lessons %}
+                                <ul class="list-group list-group-flush">
+                                    {% for lesson in lessons %}
+                                    <li class="list-group-item lesson-list-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="badge badge-day mr-2">Day {{ lesson.day_number }}</span>
+                                                <strong>{{ lesson.title }}</strong>
+                                                
+                                                {% if lesson.pdf_path %}
+                                                <div class="small text-muted mt-1">
+                                                    <i class="fas fa-file-pdf"></i> {{ lesson.pdf_path.split('/')[-1] }}
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {% if lesson.video_url %}
+                                                <div class="small text-muted">
+                                                    <i class="fas fa-video"></i> Video available
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="lesson-actions">
+                                                <a href="{{ url_for('edit_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-primary mr-2">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                <form action="{{ url_for('delete_lesson', lesson_id=lesson.id) }}" method="POST" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this lesson?')">
+                                                        <i class="fas fa-trash-alt"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <div class="text-center p-4">
+                                    <i class="fas fa-info-circle fa-2x text-muted mb-3"></i>
+                                    <p class="mb-0">No lessons have been added yet.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Update file input labels with the selected filename
+        $('.custom-file-input').on('change', function() {
+            let fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        });
+    </script>
+</body>
+</html>

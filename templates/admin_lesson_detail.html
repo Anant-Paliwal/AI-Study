@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Lesson Details: {{ lesson.title }}</h1>
+
+        <!-- Lesson Information -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Day {{ lesson.day_number }}</h5>
+                {% if lesson.video_url %}
+                    <div class="embed-responsive embed-responsive-16by9 mb-3">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{{ lesson.video_url.split('v=')[1] if 'youtube.com' in lesson.video_url else lesson.video_url }}" allowfullscreen></iframe>
+                    </div>
+                {% else %}
+                    <p class="card-text">No video available for this lesson.</p>
+                {% endif %}
+                <p class="card-text"><strong>PDF Path:</strong> {{ lesson.pdf_path }}</p>
+                <p class="card-text"><strong>Content:</strong> {{ lesson.content }}</p>
+                <p class="card-text"><strong>Summary:</strong> {{ lesson.summary }}</p>
+            </div>
+        </div>
+
+        <!-- Quiz Information -->
+        {% if lesson.quiz %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Quiz: {{ lesson.quiz.title }}</h5>
+                    <p class="card-text">{{ lesson.quiz.description }}</p>
+                </div>
+            </div>
+        {% else %}
+            <p>No quiz available for this lesson.</p>
+        {% endif %}
+
+        <a href="{{ url_for('manage_lessons', subject_id=lesson.subject_id) }}" class="btn btn-secondary">Back to Lessons</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

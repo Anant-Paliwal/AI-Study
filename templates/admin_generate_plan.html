@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Study Plan</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Generate Study Plan for {{ course.title }}</h1>
+        <form action="{{ url_for('generate_study_plan', course_id=course.id) }}" method="POST" class="mb-4">
+            <div class="form-group">
+                <label for="duration_weeks">Course Duration (weeks):</label>
+                <input type="number" class="form-control" id="duration_weeks" name="duration_weeks" value="12" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="target_exam">Target Exam:</label>
+                <input type="text" class="form-control" id="target_exam" name="target_exam" placeholder="Enter the target exam name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Plan</button>
+        </form>
+
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

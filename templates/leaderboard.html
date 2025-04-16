@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - ExamPrep{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section with User Ranking -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 bg-gradient-primary text-white overflow-hidden">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-6 fw-bold mb-3">Leaderboard</h1>
+                    <div class="d-flex align-items-center flex-wrap mb-3">
+                        <div class="me-4 mb-2">
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-trophy me-2"></i> Rank #{{ user_points_rank }}
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-light text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-fire me-2"></i> Streak Rank #{{ user_streak_rank }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-25 rounded-3 p-3 mb-3">
+                        <h5 class="text-white mb-2">Your Performance</h5>
+                        <p class="text-white-50 mb-2">You're outperforming {{ points_percentile|round|int }}% of aspirants this week!</p>
+                        
+                        {% if points_percentile >= 95 %}
+                        <div class="alert alert-warning text-dark mb-0">
+                            <i class="fas fa-star me-2"></i> <strong>Congratulations!</strong> Beat 95% of aspirants this week and earn 3 days premium access!
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-lg-4 d-none d-lg-block text-end">
+                    <i class="fas fa-medal display-1 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for different leaderboards -->
+    <ul class="nav nav-tabs mb-4" id="leaderboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="points-tab" data-bs-toggle="tab" data-bs-target="#points" type="button" role="tab" aria-controls="points" aria-selected="true">
+                <i class="fas fa-star me-2"></i> Points Leaderboard
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="streak-tab" data-bs-toggle="tab" data-bs-target="#streak" type="button" role="tab" aria-controls="streak" aria-selected="false">
+                <i class="fas fa-fire me-2"></i> Streak Leaderboard
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="leaderboardTabsContent">
+        <!-- Points Leaderboard -->
+        <div class="tab-pane fade show active" id="points" role="tabpanel" aria-labelledby="points-tab">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Top Performers by Points</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>User</th>
+                                    <th>Level</th>
+                                    <th>Points</th>
+                                    <th class="text-end pe-4">Weekly Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user_point, rank in top_users_points %}
+                                {% set user = user_point.user %}
+                                <tr class="{% if user.id == current_user.id %}table-primary{% endif %}">
+                                    <td class="ps-4">
+                                        {% if rank <= 3 %}
+                                        <span class="badge rounded-pill bg-{{ ['warning', 'secondary', 'success'][rank-1] }}">
+                                            <i class="fas fa-trophy"></i> {{ rank }}
+                                        </span>
+                                        {% else %}
+                                        {{ rank }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-2">
+                                                {{ user.username[0]|upper }}
+                                            </div>
+                                            <span>{{ user.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-white">Level {{ user_point.level }}</span>
+                                    </td>
+                                    <td>{{ user_point.points }}</td>
+                                    <td class="text-end pe-4">{{ user_point.weekly_points }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Streak Leaderboard -->
+        <div class="tab-pane fade" id="streak" role="tabpanel" aria-labelledby="streak-tab">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Top Performers by Streak</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>User</th>
+                                    <th class="text-end pe-4">Streak Days</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user, rank in top_users_streak %}
+                                <tr class="{% if user.id == current_user.id %}table-primary{% endif %}">
+                                    <td class="ps-4">
+                                        {% if rank <= 3 %}
+                                        <span class="badge rounded-pill bg-{{ ['warning', 'secondary', 'success'][rank-1] }}">
+                                            <i class="fas fa-trophy"></i> {{ rank }}
+                                        </span>
+                                        {% else %}
+                                        {{ rank }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-2">
+                                                {{ user.username[0]|upper }}
+                                            </div>
+                                            <span>{{ user.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-fire me-1"></i> {{ user.streak_count }} days
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Challenge -->
+    <div class="card mt-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-calendar-week me-2"></i>Weekly Challenge</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <h4 class="text-success mb-2">Beat 95% of aspirants this week!</h4>
+                    <p class="text-muted mb-3">Complete your daily lessons, maintain your streak, and score high on quizzes to earn more points.</p>
+                    <div class="d-flex align-items-center">
+                        <div class="progress flex-grow-1 me-3" style="height: 10px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ points_percentile }}%" 
+                                 aria-valuenow="{{ points_percentile }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="text-muted fw-bold">{{ points_percentile|round|int }}%</div>
+                    </div>
+                    <p class="text-muted mt-2 mb-0">Your current percentile: {{ points_percentile|round|int }}%</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h5 class="text-success mb-2">Reward</h5>
+                            <p class="mb-0">3 days premium access</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .avatar-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

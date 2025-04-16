@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Question</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    {% extends 'base.html' %}
+    {% block content %}
+    <div class="container mt-4">
+        <h2>Practice Question</h2>
+        
+        <form method="POST" action="{{ url_for('practice_question') }}">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Question {{ session['current_practice_index'] + 1 }} of {{ session['practice_questions']|length }}
+                </div>
+                <div class="card-body">
+                    {% if question is mapping %}
+                        <!-- For questions extracted from PDF -->
+                        <h5>{{ question.question }}</h5>
+                        
+                        {% if question.options %}
+                            <div class="form-group">
+                                {% for option in question.options %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="answer" id="option{{ loop.index }}" value="{{ loop.index0 }}">
+                                        <label class="form-check-label" for="option{{ loop.index }}">
+                                            {{ option }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <label for="answer">Your Answer:</label>
+                                <textarea class="form-control" id="answer" name="answer" rows="3"></textarea>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <!-- For questions from database -->
+                        <h5>{{ question.question_text }}</h5>
+                        
+                        {% if question.question_type == 'mcq' %}
+                            <div class="form-group">
+                                {% for option in question.options %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="answer" id="option{{ option.id }}" value="{{ option.id }}">
+                                        <label class="form-check-label" for="option{{ option.id }}">
+                                            {{ option.option_text }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <label for="answer">Your Answer:</label>
+                                <textarea class="form-control" id="answer" name="answer" rows="3"></textarea>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit Answer</button>
+        </form>
+    </div>
+    {% endblock %}
+</body>
+</html>

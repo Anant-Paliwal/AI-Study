@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Your Rewards - ExamPrep{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section with Streak Info -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 bg-gradient-primary text-white overflow-hidden">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-6 fw-bold mb-3">Your Rewards & Achievements</h1>
+                    <div class="d-flex align-items-center flex-wrap mb-3">
+                        <div class="me-4 mb-2">
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-fire me-2"></i> {{ streak_count }} day streak
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-light text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-star me-2"></i> Level {{ user_points.level }}
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-info text-white rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-trophy me-2"></i> {{ user_points.points }} points
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {% if next_milestone %}
+                    <div class="bg-white bg-opacity-25 rounded-3 p-3 mb-3">
+                        <h5 class="text-white mb-2">Next Streak Milestone</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="progress flex-grow-1 me-3" style="height: 10px;">
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ (streak_count / next_milestone) * 100 }}%" 
+                                     aria-valuenow="{{ streak_count }}" aria-valuemin="0" aria-valuemax="{{ next_milestone }}"></div>
+                            </div>
+                            <div class="text-white fw-bold">{{ streak_count }}/{{ next_milestone }}</div>
+                        </div>
+                        <p class="text-white-50 mt-2 mb-0">Keep your streak for {{ days_to_milestone }} more days to unlock a special reward!</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-4 d-none d-lg-block text-end">
+                    <i class="fas fa-award display-1 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Progress -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-level-up-alt me-2"></i>Your Level Progress</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row align-items-center mb-3">
+                <div class="col-md-3 text-center mb-3 mb-md-0">
+                    <div class="display-4 fw-bold text-success">{{ user_points.level }}</div>
+                    <div class="text-muted">Current Level</div>
+                </div>
+                <div class="col-md-9">
+                    {% if user_points.level < level_thresholds|length - 1 %}
+                    <h5 class="mb-2">Level {{ user_points.level }} → Level {{ user_points.level + 1 }}</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="progress flex-grow-1 me-3" style="height: 10px;">
+                            {% set next_threshold = level_thresholds[user_points.level + 1] %}
+                            {% set prev_threshold = level_thresholds[user_points.level] %}
+                            {% set progress_percent = ((user_points.points - prev_threshold) / (next_threshold - prev_threshold)) * 100 %}
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ progress_percent }}%" 
+                                 aria-valuenow="{{ user_points.points }}" aria-valuemin="{{ prev_threshold }}" aria-valuemax="{{ next_threshold }}"></div>
+                        </div>
+                        <div class="text-muted fw-bold">{{ user_points.points }}/{{ next_threshold }}</div>
+                    </div>
+                    <p class="text-muted mb-0">You need {{ points_needed }} more points to reach Level {{ user_points.level + 1 }}</p>
+                    {% else %}
+                    <h5 class="mb-2">Maximum Level Reached!</h5>
+                    <p class="text-muted mb-0">Congratulations! You've reached the highest level.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5 class="mb-3">Level Benefits</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Points Required</th>
+                                    <th>Benefits</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="{{ 'table-success' if user_points.level >= 1 else '' }}">
+                                    <td>1</td>
+                                    <td>0</td>
+                                    <td>Basic access to all courses</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 2 else '' }}">
+                                    <td>2</td>
+                                    <td>100</td>
+                                    <td>Unlock 1 free mock test per week</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 3 else '' }}">
+                                    <td>3</td>
+                                    <td>250</td>
+                                    <td>Access to basic study materials</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 4 else '' }}">
+                                    <td>4</td>
+                                    <td>500</td>
+                                    <td>Unlock 3 free mock tests per week</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 5 else '' }}">
+                                    <td>5</td>
+                                    <td>1000</td>
+                                    <td>Access to premium study materials</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 6 else '' }}">
+                                    <td>6</td>
+                                    <td>2000</td>
+                                    <td>Unlimited mock tests</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 7 else '' }}">
+                                    <td>7</td>
+                                    <td>4000</td>
+                                    <td>Access to expert guidance</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 8 else '' }}">
+                                    <td>8</td>
+                                    <td>8000</td>
+                                    <td>One free mentor session</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 9 else '' }}">
+                                    <td>9</td>
+                                    <td>16000</td>
+                                    <td>Premium membership benefits</td>
+                                </tr>
+                                <tr class="{{ 'table-success' if user_points.level >= 10 else '' }}">
+                                    <td>10</td>
+                                    <td>32000</td>
+                                    <td>Master status with all premium benefits</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rewards Section -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-warning text-dark py-3">
+            <h5 class="mb-0"><i class="fas fa-gift me-2"></i>Your Rewards</h5>
+        </div>
+        <div class="card-body p-4">
+            {% if rewards %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                {% for reward in rewards %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <span class="badge bg-{{ 'success' if reward.is_claimed else 'warning' }} rounded-pill px-3 py-2">
+                                    {% if reward.is_claimed %}
+                                    <i class="fas fa-check-circle me-1"></i> Claimed
+                                    {% else %}
+                                    <i class="fas fa-gift me-1"></i> Unclaimed
+                                    {% endif %}
+                                </span>
+                                <small class="text-muted">{{ reward.unlocked_date.strftime('%d %b %Y') }}</small>
+                            </div>
+                            
+                            <h5 class="card-title mb-2">{{ reward.reward_name }}</h5>
+                            <p class="card-text text-muted">{{ reward.description }}</p>
+                            
+                            {% if reward.expiry_date and not reward.is_claimed %}
+                            <div class="alert alert-warning mt-3 mb-0 py-2 px-3">
+                                <small><i class="fas fa-clock me-1"></i> Expires on {{ reward.expiry_date.strftime('%d %b %Y') }}</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if not reward.is_claimed and (not reward.expiry_date or reward.expiry_date > now) %}
+                        <div class="card-footer bg-white border-0 p-3">
+                            <form action="{{ url_for('gamification.claim_reward', reward_id=reward.id) }}" method="POST">
+                                <button type="submit" class="btn btn-warning w-100">
+                                    <i class="fas fa-gift me-2"></i> Claim Reward
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <img src="/static/images/empty-rewards.svg" alt="No rewards" class="img-fluid mb-3" style="max-height: 150px;">
+                <h4 class="text-primary mb-3">No rewards yet</h4>
+                <p class="text-muted mb-4">Complete your daily lessons and maintain your streak to earn rewards!</p>
+                <a href="{{ url_for('daily_study') }}" class="btn btn-primary">
+                    <i class="fas fa-book-reader me-2"></i> Start Learning
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

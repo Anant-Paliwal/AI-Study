@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3f37c9;
+            --secondary: #4cc9f0;
+            --accent: #f72585;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-800: #343a40;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05), 0 6px 6px rgba(0,0,0,0.07);
+            --hover-shadow: 0 14px 28px rgba(0,0,0,0.12), 0 10px 10px rgba(0,0,0,0.09);
+            --text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--gray-800);
+            font-family: 'Nunito', sans-serif;
+            line-height: 1.8;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1140px;
+        }
+        
+        /* Improved Lesson Header */
+        .lesson-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 3rem 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30%;
+            height: 100%;
+            background: url('/api/placeholder/800/800') right center/cover no-repeat;
+            opacity: 0.15;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .lesson-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: var(--text-shadow);
+            max-width: 80%;
+        }
+        
+        .day-badge {
+            font-size: 1rem;
+            padding: 0.5rem 1.2rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .day-badge i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Enhanced Cards */
+        .section-card {
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #f9f9f9, #f1f1f1);
+            border-bottom: 2px solid var(--gray-200);
+            padding: 1.25rem 1.75rem;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-icon {
+            margin-right: 1rem;
+            color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .section-header h2 {
+            margin-bottom: 0;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+        }
+        
+        .card-body {
+            padding: 1.75rem;
+        }
+        
+        /* Content Styling */
+        .formatted-content {
+            line-height: 1.9;
+            font-size: 1.1rem;
+            color: #495057;
+        }
+        
+        .formatted-content p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .formatted-content h3 {
+            color: var(--primary-dark);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .formatted-content ul, 
+        .formatted-content ol {
+            padding-left: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .formatted-content li {
+            margin-bottom: 0.75rem;
+        }
+        
+        /* Improved Study Guide Styling */
+        .study-guide-content {
+            background-color: #fffdfa;
+            padding: 0;
+            font-size: 1.1rem;
+        }
+        
+        .study-guide-paragraph {
+            padding: 1.5rem;
+            margin-bottom: 0;
+            border-bottom: 1px solid #f0e8d5;
+            position: relative;
+        }
+        
+        .study-guide-paragraph:last-child {
+            border-bottom: none;
+        }
+        
+        .study-guide-paragraph::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: linear-gradient(to bottom, var(--secondary), var(--primary-light));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .study-guide-paragraph:hover::before {
+            opacity: 1;
+        }
+        
+        .study-guide-paragraph strong,
+        .study-guide-paragraph b {
+            color: var(--accent);
+            font-weight: 600;
+        }
+        
+        .study-guide-paragraph h3,
+        .study-guide-paragraph h4 {
+            color: var(--primary-dark);
+            margin-top: 0.75rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        /* Button Styling */
+        .btn {
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+            border: none;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #27ae60, var(--success));
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            background-color: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .navigation-btn {
+            padding: 0.75rem 1.75rem;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navigation-btn i {
+            transition: transform 0.3s ease;
+        }
+        
+        .navigation-btn:hover i.fa-chevron-right {
+            transform: translateX(4px);
+        }
+        
+        .navigation-btn:hover i.fa-chevron-left {
+            transform: translateX(-4px);
+        }
+        
+        .back-to-subject {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .back-to-subject i {
+            margin-right: 0.75rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .back-to-subject:hover i {
+            transform: translateX(-4px);
+        }
+        
+        /* Generate Study Materials Button */
+        .generate-btn {
+            padding: 1rem 2rem;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--success), #27ae60);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .generate-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #27ae60, var(--success));
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+        
+        .generate-btn:hover::after {
+            opacity: 1;
+        }
+        
+        .generate-btn i {
+            margin-right: 0.75rem;
+            font-size: 1.2rem;
+        }
+        
+        .action-buttons {
+            margin: 2.5rem 0;
+        }
+        
+        /* Quiz Styling */
+        .quiz-question {
+            background-color: white;
+            border-left: 5px solid var(--primary);
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 1.5rem !important;
+        }
+        
+        .quiz-question h5 {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.25rem;
+            font-size: 1.2rem;
+        }
+        
+        .quiz-option {
+            padding: 0.75rem 1.25rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: 1px solid var(--gray-300);
+            background-color: #fafafa;
+        }
+        
+        .quiz-option:hover {
+            background-color: #f3f3f3;
+            transform: translateX(5px);
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        
+        .option-marker {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: var(--primary-light);
+            color: white;
+            border-radius: 50%;
+            margin-right: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .badge-success {
+            background-color: var(--success);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+        }
+        
+        /* Video Container */
+        .video-container {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Mind Map Container */
+        .mind-map-container {
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .mind-map-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .mind-map-container img:hover {
+            transform: scale(1.02);
+        }
+        
+        /* Alert Styling */
+        .alert {
+            border-radius: 10px;
+            padding: 1.25rem;
+            font-weight: 500;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+        
+        .alert-info {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--info);
+            border-left: 5px solid var(--info);
+        }
+        
+        /* Navigation Wrapper */
+        .navigation-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2.5rem;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 30px;
+            height: 8px;
+            width: 100%;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 30px;
+            background: linear-gradient(90deg, var(--primary-light), var(--primary));
+            width: 0;
+            transition: width 0.5s ease;
+        }
+        
+        /* Lesson Meta Info */
+        .lesson-meta {
+            display: flex;
+            margin-top: 1rem;
+            gap: 1rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .meta-item i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .lesson-header {
+                padding: 2rem 1.5rem;
+            }
+            
+            .lesson-header h1 {
+                font-size: 2rem;
+                max-width: 100%;
+            }
+            
+            .section-card {
+                margin-bottom: 1.5rem;
+            }
+            
+            .navigation-btn {
+                padding: 0.6rem 1.25rem;
+                font-size: 0.95rem;
+            }
+            
+            .card-body {
+                padding: 1.25rem;
+            }
+            
+            .section-header {
+                padding: 1rem;
+            }
+            
+            .section-icon {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .section-header h2 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Animation Effects */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .section-card:nth-child(2) { animation-delay: 0.1s; }
+        .section-card:nth-child(3) { animation-delay: 0.2s; }
+        .section-card:nth-child(4) { animation-delay: 0.3s; }
+        .section-card:nth-child(5) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        <!-- Lesson Header -->
+        <div class="lesson-header">
+            <h1>{{ lesson.title }}</h1>
+            <div class="lesson-meta">
+                <div class="meta-item">
+                    <i class="fas fa-calendar-day"></i>
+                    Day {{ lesson.day_number }}
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    {{ lesson.duration if lesson.duration else '45 minutes' }}
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-signal"></i>
+                    {{ lesson.difficulty if lesson.difficulty else 'Intermediate' }}
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container mt-3">
+                <div class="progress-bar" style="width: {{ (lesson.day_number / total_lessons) * 100 if total_lessons else 50 }}%"></div>
+            </div>
+        </div>
+        
+        <!-- Generate Study Materials Button - TOP POSITION -->
+        {% if lesson.content and not lesson.summary %}
+        <div class="text-center action-buttons">
+            <form action="{{ url_for('generate_study_data', lesson_id=lesson.id) }}" method="POST">
+                <button type="submit" class="btn generate-btn">
+                    <i class="fas fa-magic"></i> Generate Study Materials
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Lesson Content -->
+        <div class="section-card card">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h2>Lesson Content</h2>
+            </div>
+            <div class="card-body">
+                <div class="formatted-content">
+                    {{ lesson.content|safe }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Study Guide -->
+        {% if lesson.summary %}
+        <div class="section-card card">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h2>AI-Generated Study Guide</h2>
+            </div>
+            <div class="card-body p-0">
+                <div class="study-guide-content">
+                    {% for paragraph in lesson.summary.split('\n\n') %}
+                        <div class="study-guide-paragraph">
+                            {{ paragraph|replace('\n', '<br>')|safe }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- No Study Guide Message -->
+        <div class="section-card card">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h2>AI-Generated Study Guide</h2>
+            </div>
+            <div class="card-body text-center py-5">
+                <div class="alert alert-info mb-4">
+                    <i class="fas fa-info-circle mr-2"></i> No study guide has been generated for this lesson yet.
+                </div>
+                
+                {% if lesson.content %}
+                <form action="{{ url_for('generate_study_data', lesson_id=lesson.id) }}" method="POST">
+                    <button type="submit" class="btn generate-btn">
+                        <i class="fas fa-magic"></i> Generate Study Materials Now
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Mind Map -->
+        <div class="section-card card">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <h2>Mind Map</h2>
+            </div>
+            <div class="card-body">
+                {% if lesson.mind_map_url %}
+                    <div class="mind-map-container">
+                        <img src="{{ url_for('static', filename='uploads/' + lesson.mind_map_url.replace('\\', '/').split('/')[-1]) }}" alt="Mind Map for {{ lesson.title }}" class="img-fluid">
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle mr-2"></i> No mind map available for this lesson.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Video -->
+        <div class="section-card card">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-video"></i>
+                </div>
+                <h2>Lesson Video</h2>
+            </div>
+            <div class="card-body">
+                {% if lesson.video_url %}
+                    <div class="video-container">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{{ lesson.video_url.split('v=')[1] if 'youtube.com' in lesson.video_url else lesson.video_url }}" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle mr-2"></i> No video available for this lesson.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quiz -->
+        <div class="section-card card">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h2>Quiz</h2>
+            </div>
+            <div class="card-body">
+                {% if quiz %}
+                    <div class="quiz-container">
+                        {% for question in quiz.questions %}
+                            <div class="quiz-question card">
+                                <h5><span class="text-primary">#{{ loop.index }}</span> {{ question.question_text }}</h5>
+                                <div class="options-list">
+                                    {% for option in question.options %}
+                                        <div class="quiz-option {% if option.is_correct %}correct{% endif %}">
+                                            <div class="d-flex align-items-center">
+                                                <div class="option-marker">{{ loop.index | string | upper }}</div>
+                                                <div>{{ option.option_text }}</div>
+                                                {% if option.is_correct %}
+                                                    <span class="ml-auto badge badge-success"><i class="fas fa-check mr-1"></i> Correct</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle mr-2"></i> No quiz available for this lesson.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Navigation Wrapper -->
+        <div class="navigation-wrapper">
+            <a href="{{ url_for('view_subject', subject_id=lesson.subject_id) }}" class="btn btn-outline-primary back-to-subject mb-2">
+                <i class="fas fa-arrow-left"></i> Back to Subject
+            </a>
+            
+            <div class="navigation-buttons">
+                {% if prev_lesson %}
+                    <a href="{{ url_for('view_lesson', lesson_id=prev_lesson.id) }}" class="btn btn-outline-primary navigation-btn mb-2 mr-2">
+                        <i class="fas fa-chevron-left mr-1"></i> Previous Lesson
+                    </a>
+                {% endif %}
+                
+                {% if next_lesson %}
+                    <a href="{{ url_for('view_lesson', lesson_id=next_lesson.id) }}" class="btn btn-primary navigation-btn mb-2">
+                        Next Lesson <i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Set progress bar width after page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                setTimeout(() => {
+                    bar.style.width = bar.getAttribute('style').split(':')[1];
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

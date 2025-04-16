@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock Practice - Start</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    {% extends 'base.html' %}
+    {% block content %}
+    <div class="container mt-4">
+        <h2>Start Mock Practice</h2>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                Upload Previous Exam Paper
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" action="{{ url_for('start_mock_practice') }}">
+                    <div class="mb-3">
+                        <label for="exam_paper" class="form-label">Select PDF file:</label>
+                        <input class="form-control" type="file" id="exam_paper" name="exam_paper" accept=".pdf">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Start Practice</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                Or Use Existing Question Bank
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('start_mock_practice') }}">
+                    <button type="submit" class="btn btn-secondary">Use Question Bank</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+</body>
+</html>

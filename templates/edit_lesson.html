@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Lesson</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Edit Lesson: {{ lesson.title }}</h1>
+
+        <form action="{{ url_for('update_lesson', lesson_id=lesson.id) }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="title">Lesson Title:</label>
+                <input type="text" class="form-control" id="title" name="title" value="{{ lesson.title }}" required>
+            </div>
+            <div class="form-group">
+                <label for="day_number">Day Number:</label>
+                <input type="number" class="form-control" id="day_number" name="day_number" value="{{ lesson.day_number }}" required>
+            </div>
+            <div class="form-group">
+                <label for="content">Content:</label>
+                <textarea class="form-control" id="content" name="content" rows="5">{{ lesson.content }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="summary">Summary:</label>
+                <textarea class="form-control" id="summary" name="summary" rows="3">{{ lesson.summary }}</textarea>
+            </div>
+            <div class="form-group">
+                <label for="video_url">Video URL:</label>
+                <input type="text" class="form-control" id="video_url" name="video_url" value="{{ lesson.video_url }}" placeholder="Enter YouTube URL (e.g. https://www.youtube.com/watch?v=VIDEO_ID)">
+                {% if lesson.video_url %}
+                    <div class="mt-3">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{{ lesson.video_url.split('v=')[1] if 'youtube.com' in lesson.video_url else lesson.video_url }}" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="mind_map">Upload Mind Map (PNG/JPG):</label>
+                <input type="file" class="form-control-file" id="mind_map" name="mind_map" accept="image/png,image/jpeg">
+                {% if lesson.mind_map_url %}
+                    <div class="mt-3">
+                        <img src="{{ url_for('static', filename=lesson.mind_map_url.split('uploads/')[-1] if lesson.mind_map_url else '') }}" alt="Mind Map for {{ lesson.title }}" class="img-fluid">
+                    </div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="{{ url_for('admin_lesson_detail', lesson_id=lesson.id) }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block title %}Progress Calendar - ExamPrep{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hero Section with Streak Info -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 bg-gradient-primary text-white overflow-hidden">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-6 fw-bold mb-3">Your Learning Journey</h1>
+                    <div class="d-flex align-items-center flex-wrap mb-3">
+                        <div class="me-4 mb-2">
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-fire me-2"></i> {{ streak_count }} day streak
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-light text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-star me-2"></i> Level {{ user_points.level }}
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-info text-white rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-trophy me-2"></i> {{ user_points.points }} points
+                            </span>
+                        </div>
+                    </div>
+                    <p class="text-white-50 mb-0">Track your daily progress and maintain your learning streak!</p>
+                    
+                    {% if next_milestone %}
+                    <div class="bg-white bg-opacity-25 rounded-3 p-3 mt-3">
+                        <h5 class="text-white mb-2">Next Streak Reward</h5>
+                        <div class="d-flex align-items-center">
+                            <div class="progress flex-grow-1 me-3" style="height: 10px;">
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ (streak_count / next_milestone) * 100 }}%" 
+                                     aria-valuenow="{{ streak_count }}" aria-valuemin="0" aria-valuemax="{{ next_milestone }}"></div>
+                            </div>
+                            <div class="text-white fw-bold">{{ streak_count }}/{{ next_milestone }}</div>
+                        </div>
+                        <p class="text-white-50 mt-2 mb-0">{{ days_to_milestone }} more days to unlock: <strong>{{ next_reward.name }}</strong></p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="col-lg-4 d-none d-lg-block text-end">
+                    <i class="fas fa-calendar-check display-1 opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar View -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-info text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Your 30-Day Progress</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="calendar-container">
+                <div class="calendar-header d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">{{ current_month_name }}</h4>
+                </div>
+                
+                <div class="calendar-grid">
+                    <!-- Day names -->
+                    <div class="calendar-weekdays mb-2">
+                        <div class="weekday">Sun</div>
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                    </div>
+                    
+                    <!-- Calendar days -->
+                    <div class="calendar-days">
+                        {% for week in calendar_weeks %}
+                            <div class="calendar-week">
+                                {% for day in week %}
+                                    {% if day.date %}
+                                        {% set date_str = day.date.strftime('%Y-%m-%d') %}
+                                        {% set has_activity = date_str in calendar_data %}
+                                        {% set is_today = day.date.date() == today.date() %}
+                                        
+                                        <div class="calendar-day {{ 'today' if is_today else '' }} {{ 'has-activity' if has_activity else '' }}">
+                                            <div class="day-number">{{ day.date.day }}</div>
+                                            {% if has_activity %}
+                                                <div class="activity-indicator">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span class="activity-count">{{ calendar_data[date_str]|length }}</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <div class="calendar-day empty"></div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="calendar-legend mt-4">
+                    <div class="d-flex align-items-center">
+                        <div class="legend-item me-4">
+                            <span class="legend-color today"></span>
+                            <span class="legend-text">Today</span>
+                        </div>
+                        <div class="legend-item me-4">
+                            <span class="legend-color has-activity"></span>
+                            <span class="legend-text">Completed Lessons</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color"></span>
+                            <span class="legend-text">No Activity</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Streak Rewards Section -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-warning text-dark py-3">
+            <h5 class="mb-0"><i class="fas fa-award me-2"></i>Streak Rewards</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-3">
+                {% for days, reward in streak_rewards.items() %}
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm hover-shadow transition-all {{ 'border-success border-2' if streak_count >= days else '' }}">
+                        <div class="card-body text-center">
+                            <div class="streak-milestone-icon mb-3 {{ 'text-success' if streak_count >= days else 'text-muted' }}">
+                                <i class="fas fa-fire{{ '-alt' if streak_count >= days else '' }} fa-2x"></i>
+                                <div class="milestone-days fw-bold mt-1">{{ days }} DAYS</div>
+                            </div>
+                            
+                            <h5 class="card-title">{{ reward.name }}</h5>
+                            <p class="card-text small text-muted">{{ reward.description }}</p>
+                            
+                            {% if streak_count >= days %}
+                            <span class="badge bg-success rounded-pill px-3 py-2 mt-2">
+                                <i class="fas fa-check-circle me-1"></i> Unlocked
+                            </span>
+                            {% else %}
+                            <span class="badge bg-light text-muted rounded-pill px-3 py-2 mt-2">
+                                <i class="fas fa-lock me-1"></i> Locked
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-2"></i> Maintain your daily streak to unlock special rewards! Visit the <a href="{{ url_for('user_rewards') }}" class="alert-link">Rewards page</a> to claim your unlocked rewards.
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaderboard Preview -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Leaderboard Preview</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <h4 class="text-primary mb-2">Your Ranking</h4>
+                    <div class="d-flex align-items-center flex-wrap mb-3">
+                        <div class="me-4 mb-2">
+                            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-trophy me-2"></i> Points Rank #{{ user_points_rank }}
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="badge bg-info text-white rounded-pill px-3 py-2 d-inline-flex align-items-center">
+                                <i class="fas fa-fire me-2"></i> Streak Rank #{{ user_streak_rank }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    
+                <div class="col-md-4 text-center">
+                    <a href="{{ url_for('leaderboard') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-medal me-2"></i> View Full Leaderboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Activity Details -->
+    <div class="card mb-5 border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-list-check me-2"></i>Recent Activity</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Date</th>
+                            <th>Course</th>
+                            <th>Lesson</th>
+                            <th class="text-end pe-4">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set recent_dates = calendar_data.keys()|list|sort(reverse=true) %}
+                        {% for date_str in recent_dates[:10] %}
+                            {% for progress in calendar_data[date_str] %}
+                                <tr>
+                                    <td class="ps-4">{{ progress.completion_date.strftime('%d %b %Y') }}</td>
+                                    <td>{{ progress.enrollment.course.title }}</td>
+                                    <td class="text-end pe-4">
+                                        {% if progress.quiz_score %}
+                                            <span class="badge bg-{{ 'success' if progress.quiz_score >= 70 else 'warning' if progress.quiz_score >= 40 else 'danger' }}">
+                                                {{ progress.quiz_score|round|int }}%
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Completed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .calendar-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        font-weight: bold;
+        color: #6c757d;
+    }
+    
+    .calendar-week {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .calendar-day {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        padding: 5px;
+        position: relative;
+        background-color: #f8f9fa;
+        transition: all 0.2s;
+    }
+    
+    .calendar-day:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .calendar-day.empty {
+        background-color: transparent;
+        border: none;
+    }
+    
+    .calendar-day.today {
+        background-color: #e6f7ff;
+        border-color: #4cc9f0;
+    }
+    
+    .calendar-day.has-activity {
+        background-color: #d1fae5;
+        border-color: #10b981;
+    }
+    
+    .day-number {
+        font-weight: bold;
+    }
+    
+    .activity-indicator {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+    }
+    
+    .activity-count {
+        font-size: 0.75rem;
+        margin-left: 2px;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        margin-right: 6px;
+        border: 1px solid #e9ecef;
+        background-color: #f8f9fa;
+    }
+    
+    .legend-color.today {
+        background-color: #e6f7ff;
+        border-color: #4cc9f0;
+    }
+    
+    .legend-color.has-activity {
+        background-color: #d1fae5;
+        border-color: #10b981;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Generate calendar data for display
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        // Set current month name
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"];
+        document.querySelector('.calendar-header h4').textContent = monthNames[currentMonth] + " " + currentYear;
+    });
+</script>
+{% endblock %}

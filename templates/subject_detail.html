@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+            --success-color: #10b981;
+            --warning-color: #fbbf24;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .page-description {
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .enrollment-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .badge-enrolled {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+        
+        .badge-not-enrolled {
+            background-color: rgba(251, 191, 36, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .enrollment-badge i {
+            margin-right: 0.5rem;
+        }
+        
+        .section-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .chapter-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .chapter-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chapter-header {
+            cursor: pointer;
+            padding: 1.2rem 1.5rem;
+            background-color: white;
+            border: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chapter-title {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 1.2rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chapter-number {
+            background-color: var(--primary-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            margin-right: 1rem;
+        }
+        
+        .chapter-icon {
+            transition: transform 0.3s;
+            color: var(--primary-color);
+        }
+        
+        .chapter-content {
+            background-color: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .nav-tabs {
+            padding: 0 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .nav-tabs .nav-item {
+            margin-bottom: -1px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #64748b;
+            padding: 1rem 1.2rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: transparent;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link i {
+            margin-right: 0.5rem;
+        }
+        
+        .tab-content {
+            padding: 2rem;
+        }
+        
+        .tab-pane h4 {
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .tab-pane p {
+            color: #4a5568;
+            line-height: 1.7;
+        }
+        
+        .lesson-list {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .lesson-item {
+            border: none;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+        
+        .lesson-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .lesson-day {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            min-width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .lesson-title {
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+        
+        .btn-view-lesson {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-view-lesson:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .badge-locked {
+            background-color: #e2e8f0;
+            color: #64748b;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .badge-locked i {
+            margin-right: 0.4rem;
+        }
+        
+        .resource-card {
+            border: none;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .resource-card .card-body {
+            padding: 1.5rem;
+        }
+        
+        .resource-card .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+        
+        .resource-metadata {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .resource-metadata i {
+            margin-right: 0.4rem;
+        }
+        
+        .mind-map-container {
+            text-align: center;
+            margin: 1rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .mind-map-img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .mind-map-img:hover {
+            transform: scale(1.02);
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            margin: 1rem 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+        
+        .btn-quiz {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0.7rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn-quiz:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-quiz i {
+            margin-right: 0.5rem;
+        }
+        
+        .note-card {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .btn-back {
+            background-color: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .btn-back:hover {
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-back i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Empty state styling */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+        
+        .empty-state i {
+            font-size: 2.5rem;
+            color: #cbd5e0;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="page-title">{{ subject.name }}</h1>
+                <p class="page-description">{{ subject.description }}</p>
+                
+                <!-- Enrollment Badge -->
+                {% if is_enrolled %}
+                    <span class="enrollment-badge badge-enrolled">
+                        <i class="fas fa-check-circle"></i> Enrolled
+                    </span>
+                {% else %}
+                    <span class="enrollment-badge badge-not-enrolled">
+                        <i class="fas fa-exclamation-circle"></i> Not Enrolled
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Chapters and Lessons -->
+        <h2 class="section-title">
+            <i class="fas fa-book-open mr-2"></i> Chapters & Lessons
+        </h2>
+        
+        <div class="accordion" id="chaptersAccordion">
+            {% for chapter in chapters %}
+                <div class="card chapter-card">
+                    <div class="card-header chapter-header" id="heading{{ chapter.id }}" data-toggle="collapse" data-target="#collapse{{ chapter.id }}" aria-expanded="false" aria-controls="collapse{{ chapter.id }}">
+                        <h5 class="chapter-title">
+                            <span class="chapter-number">{{ chapter.chapter_number }}</span>
+                            {{ chapter.title }}
+                        </h5>
+                        <i class="fas fa-chevron-down chapter-icon"></i>
+                    </div>
+
+                    <div id="collapse{{ chapter.id }}" class="collapse" aria-labelledby="heading{{ chapter.id }}" data-parent="#chaptersAccordion">
+                        <div class="chapter-content">
+                            <!-- Chapter Content Tabs -->
+                            <ul class="nav nav-tabs" id="chapterTabs{{ chapter.id }}" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="content-tab{{ chapter.id }}" data-toggle="tab" href="#content{{ chapter.id }}" role="tab" aria-controls="content{{ chapter.id }}" aria-selected="true">
+                                        <i class="fas fa-book"></i> Content
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="notes-tab{{ chapter.id }}" data-toggle="tab" href="#notes{{ chapter.id }}" role="tab" aria-controls="notes{{ chapter.id }}" aria-selected="false">
+                                        <i class="fas fa-sticky-note"></i> Notes
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="mindmap-tab{{ chapter.id }}" data-toggle="tab" href="#mindmap{{ chapter.id }}" role="tab" aria-controls="mindmap{{ chapter.id }}" aria-selected="false">
+                                        <i class="fas fa-project-diagram"></i> Mind Map
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="quiz-tab{{ chapter.id }}" data-toggle="tab" href="#quiz{{ chapter.id }}" role="tab" aria-controls="quiz{{ chapter.id }}" aria-selected="false">
+                                        <i class="fas fa-question-circle"></i> Quiz
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="videos-tab{{ chapter.id }}" data-toggle="tab" href="#videos{{ chapter.id }}" role="tab" aria-controls="videos{{ chapter.id }}" aria-selected="false">
+                                        <i class="fas fa-video"></i> Videos
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <!-- Tab Content -->
+                            <div class="tab-content" id="chapterTabContent{{ chapter.id }}">
+                                <!-- Content Tab -->
+                                <div class="tab-pane fade show active" id="content{{ chapter.id }}" role="tabpanel" aria-labelledby="content-tab{{ chapter.id }}">
+                                    <div>
+                                        <h4>
+                                            <i class="fas fa-clipboard-list mr-2"></i> Chapter Summary
+                                        </h4>
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <p>{{ chapter.summary }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <h4>
+                                            <i class="fas fa-file-alt mr-2"></i> Full Content
+                                        </h4>
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <p>{{ chapter.content }}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Related Lessons -->
+                                        <h4>
+                                            <i class="fas fa-calendar-day mr-2"></i> Daily Lessons
+                                        </h4>
+                                        <div class="lesson-list">
+                                            {% for lesson in lessons if lesson.chapter_id == chapter.id %}
+                                                <div class="lesson-item">
+                                                    <div class="lesson-info">
+                                                        <div class="lesson-day">Day {{ lesson.day_number }}</div>
+                                                        <div class="lesson-title">{{ lesson.title }}</div>
+                                                    </div>
+                                                    <div>
+                                                        {% if is_enrolled and current_day >= lesson.day_number %}
+                                                            <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}" class="btn-view-lesson">
+                                                                <i class="fas fa-arrow-right"></i> View
+                                                            </a>
+                                                        {% else %}
+                                                            <span class="badge-locked">
+                                                                <i class="fas fa-lock"></i> Locked
+                                                            </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Notes Tab -->
+                                <div class="tab-pane fade" id="notes{{ chapter.id }}" role="tabpanel" aria-labelledby="notes-tab{{ chapter.id }}">
+                                    <div>
+                                        <h4>
+                                            <i class="fas fa-sticky-note mr-2"></i> Study Notes
+                                        </h4>
+                                        {% if chapter.notes %}
+                                            {% for note in chapter.notes %}
+                                                <div class="card resource-card note-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ note.title }}</h5>
+                                                        <p class="card-text">{{ note.content }}</p>
+                                                        <div class="resource-metadata">
+                                                            <i class="far fa-clock"></i>
+                                                            <span>Last updated: {{ note.updated_at.strftime('%Y-%m-%d') }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="empty-state">
+                                                <i class="far fa-sticky-note"></i>
+                                                <p>No notes available for this chapter yet.</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Mind Map Tab -->
+                                <div class="tab-pane fade" id="mindmap{{ chapter.id }}" role="tabpanel" aria-labelledby="mindmap-tab{{ chapter.id }}">
+                                    <div>
+                                        <h4>
+                                            <i class="fas fa-project-diagram mr-2"></i> Concept Mind Maps
+                                        </h4>
+                                        {% if chapter.mind_maps %}
+                                            {% for mind_map in chapter.mind_maps %}
+                                                <div class="card resource-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ mind_map.title }}</h5>
+                                                        <div class="mind-map-container">
+                                                            <img src="{{ mind_map.image_path }}" alt="{{ mind_map.title }}" class="mind-map-img">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="empty-state">
+                                                <i class="fas fa-project-diagram"></i>
+                                                <p>No mind maps available for this chapter yet.</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Quiz Tab -->
+                                <div class="tab-pane fade" id="quiz{{ chapter.id }}" role="tabpanel" aria-labelledby="quiz-tab{{ chapter.id }}">
+                                    <div>
+                                        <h4>
+                                            <i class="fas fa-question-circle mr-2"></i> Practice Quizzes
+                                        </h4>
+                                        {% if chapter.quizzes %}
+                                            {% for quiz in chapter.quizzes %}
+                                                <div class="card resource-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ quiz.title }}</h5>
+                                                        <p class="card-text">{{ quiz.description }}</p>
+                                                        <a href="{{ url_for('take_chapter_quiz', quiz_id=quiz.id) }}" class="btn-quiz">
+                                                            <i class="fas fa-play-circle"></i> Take Quiz
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="empty-state">
+                                                <i class="fas fa-question-circle"></i>
+                                                <p>No quizzes available for this chapter yet.</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Videos Tab -->
+                                <div class="tab-pane fade" id="videos{{ chapter.id }}" role="tabpanel" aria-labelledby="videos-tab{{ chapter.id }}">
+                                    <div>
+                                        <h4>
+                                            <i class="fas fa-video mr-2"></i> Video Lectures
+                                        </h4>
+                                        {% if chapter.videos %}
+                                            {% for video in chapter.videos %}
+                                                <div class="card resource-card">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">{{ video.title }}</h5>
+                                                        <p class="card-text">{{ video.description }}</p>
+                                                        <div class="video-container">
+                                                            <iframe src="{{ video.video_url }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                        </div>
+                                                        <div class="resource-metadata">
+                                                            <i class="far fa-clock"></i>
+                                                            <span>Duration: {{ video.duration // 60 }}:{{ '%02d' % (video.duration % 60) }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            <div class="empty-state">
+                                                <i class="fas fa-video"></i>
+                                                <p>No videos available for this chapter yet.</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Legacy Lessons List (if no chapters are available) -->
+        {% if not chapters %}
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mb-4">
+                        <i class="fas fa-list-ul mr-2"></i> Lessons
+                    </h4>
+                    <div class="lesson-list">
+                        {% for lesson in lessons %}
+                            <div class="lesson-item">
+                                <div class="lesson-info">
+                                    <div class="lesson-day">Day {{ lesson.day_number }}</div>
+                                    <div class="lesson-title">{{ lesson.title }}</div>
+                                </div>
+                                <div>
+                                    {% if is_enrolled and current_day >= lesson.day_number %}
+                                        <a href="{{ url_for('view_lesson', lesson_id=lesson.id) }}" class="btn-view-lesson">
+                                            <i class="fas fa-arrow-right"></i> View
+                                        </a>
+                                    {% else %}
+                                        <span class="badge-locked">
+                                            <i class="fas fa-lock"></i> Locked
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <a href="{{ url_for('view_course', course_id=subject.course_id) }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Course
+        </a>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Toggle icon rotation on collapse
+        $('.chapter-header').on('click', function() {
+            $(this).find('.chapter-icon').toggleClass('fa-chevron-down fa-chevron-up');
+        });
+    </script>
+</body>
+</html>

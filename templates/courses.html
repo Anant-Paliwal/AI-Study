@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Courses</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-text: #333;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0;
+            border-radius: 0 0 20px 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .course-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            height: 8px;
+            padding: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .card-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .card-text {
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .category-badge {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            font-weight: 500;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .duration-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+        
+        .duration-info i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .card-footer {
+            background-color: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.5rem;
+        }
+        
+        .btn-enroll {
+            background: var(--primary-color);
+            border: none;
+            border-radius: 50px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-enroll:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .enrolled-badge {
+            background-color: #10b981;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+        
+        .back-btn {
+            background-color: #e9ecef;
+            color: #495057;
+            border: none;
+            border-radius: 50px;
+            padding: 0.7rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background-color: #dee2e6;
+            color: #212529;
+        }
+        
+        .back-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Category colors */
+        .category-development { background-color: rgba(67, 97, 238, 0.1); color: #4361ee; }
+        .category-design { background-color: rgba(247, 37, 133, 0.1); color: #f72585; }
+        .category-business { background-color: rgba(58, 134, 255, 0.1); color: #3a86ff; }
+        .category-marketing { background-color: rgba(76, 201, 240, 0.1); color: #4cc9f0; }
+        .category-personal { background-color: rgba(67, 170, 139, 0.1); color: #43aa8b; }
+        .category-health { background-color: rgba(242, 92, 84, 0.1); color: #f25c54; }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="page-title">Discover Your Next Course</h1>
+                <p class="subtitle">Expand your skills with our comprehensive course catalog</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Courses Section -->
+        <div class="row">
+            {% for course in courses %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="course-card card">
+                        <!-- Color bar based on category -->
+                        <div class="card-header category-{{ course.category.lower() }}"></div>
+                        <div class="card-body">
+                            <span class="category-badge category-{{ course.category.lower() }}">
+                                <i class="fas 
+                                {% if course.category == 'Development' %}fa-code
+                                {% elif course.category == 'Design' %}fa-paint-brush
+                                {% elif course.category == 'Business' %}fa-briefcase
+                                {% elif course.category == 'Marketing' %}fa-bullhorn
+                                {% elif course.category == 'Health' %}fa-heartbeat
+                                {% else %}fa-book
+                                {% endif %}"></i>
+                                {{ course.category }}
+                            </span>
+                            <h5 class="card-title">{{ course.title }}</h5>
+                            <p class="card-text">{{ course.description }}</p>
+                            <div class="duration-info">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>{{ course.duration_weeks }} weeks</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            {% if course.id in enrolled_course_ids %}
+                                <span class="enrolled-badge">
+                                    <i class="fas fa-check-circle mr-1"></i> Enrolled
+                                </span>
+                            {% else %}
+                                <form action="{{ url_for('enroll_in_course', course_id=course.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-enroll btn-block">
+                                        <i class="fas fa-user-plus mr-1"></i> Enroll Now
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Navigation -->
+        <div class="text-center my-5">
+            <a href="{{ url_for('index') }}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

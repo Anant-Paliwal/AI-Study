@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        
+        .lesson-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-card {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-header {
+            background-color: #f1f8ff;
+            border-bottom: 2px solid #deeaff;
+            padding: 1rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-icon {
+            margin-right: 0.75rem;
+            color: #007bff;
+        }
+        
+        .formatted-content {
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        
+        .navigation-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+        
+        .btn-outline-primary {
+            color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .quiz-question {
+            background-color: #fff;
+            border-left: 4px solid #007bff;
+            margin-bottom: 1rem;
+        }
+        
+        .quiz-option {
+            padding: 0.5rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 4px;
+        }
+        
+        .quiz-option.correct {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+        
+        .day-badge {
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+        }
+        
+        .mind-map-container {
+            text-align: center;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        /* Improved Study Guide Styling */
+        .study-guide-content {
+            background-color: #fffdf7;
+            padding: 0;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .study-guide-paragraph {
+            padding: 1.25rem;
+            margin-bottom: 0;
+            border-bottom: 1px solid #f0e8d5;
+        }
+        
+        .study-guide-paragraph:last-child {
+            border-bottom: none;
+        }
+        
+        .study-guide-paragraph strong,
+        .study-guide-paragraph b {
+            color: #d35400;
+        }
+        
+        .study-guide-paragraph h3,
+        .study-guide-paragraph h4 {
+            color: #2c3e50;
+            margin-top: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .study-guide-paragraph ul,
+        .study-guide-paragraph ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .study-guide-paragraph li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .back-to-subject {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .back-to-subject i {
+            margin-right: 0.5rem;
+        }
+        
+        /* Generate Study Materials Button Styling */
+        .generate-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        
+        .generate-btn:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+        }
+        
+        .generate-btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .action-buttons {
+            margin: 2rem 0;
+        }
+
+        /* NEW STYLES FOR ENHANCED FEATURES */
+        /* Progress Tracker */
+        .progress-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #007bff, #00c6ff);
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Notes Feature */
+        .notes-container {
+            position: relative;
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .notes-textarea:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .notes-save-btn {
+            position: absolute;
+            bottom: 1.5rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+            border-radius: 4px;
+        }
+
+        /* Flashcards */
+        .flashcard {
+            perspective: 1000px;
+            height: 200px;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .flashcard-front {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+
+        .flashcard-back {
+            background-color: #e9f7ef;
+            border-left: 4px solid #28a745;
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .flashcard-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .flashcard-nav button {
+            margin: 0 0.5rem;
+        }
+
+        /* Pomodoro Timer */
+        .pomodoro-container {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            color: #343a40;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .timer-mode {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .timer-mode button {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .timer-status {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+
+        /* Social Sharing */
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-btn.facebook {
+            background-color: #3b5998;
+        }
+
+        .social-btn.twitter {
+            background-color: #1da1f2;
+        }
+
+        .social-btn.whatsapp {
+            background-color: #25d366;
+        }
+
+        .social-btn.telegram {
+            background-color: #0088cc;
+        }
+
+        /* Tabs for organizing content */
+        .content-tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+
+        .content-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .content-tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+
+        .content-tab:hover:not(.active) {
+            color: #495057;
+            border-bottom-color: #dee2e6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Achievement system */
+        .achievement-icon {
+            color: #ffc107;
+        }
+
+        /* Celebration animation */
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            top: -10px;
+            z-index: 9999;
+            animation: confetti 5s ease-in-out forwards;
+        }
+        
+        /* Focus Mode */
+        .focus-mode-active .navbar,
+        .focus-mode-active .lesson-header,
+        .focus-mode-active .progress-container,
+        .focus-mode-active .content-tabs,
+        .focus-mode-active .action-buttons {
+            opacity: 0.2;
+            transition: opacity 0.3s ease;
+        }
+        
+        .focus-mode-active .section-card:not(.focus-active) {
+            opacity: 0.2;
+            transition: opacity 0.3s ease;
+        }
+        
+        .focus-mode-active .section-card.focus-active {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0, 123, 255, 0.2);
+        }
+        
+        .focus-mode-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .focus-mode-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Spaced Repetition System */
+        .srs-container {
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .srs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .srs-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .srs-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .srs-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .srs-btn-easy {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .srs-btn-medium {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .srs-btn-hard {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 mb-5">
+        <!-- Lesson Header -->
+        <div class="lesson-header">
+            <h1 class="mb-2">{{ lesson.title }}</h1>
+            <span class="day-badge">
+                <i class="fas fa-calendar-day mr-1"></i> Day {{ lesson.day_number }}
+            </span>
+        </div>
+
+        <!-- NEW: Progress Tracker -->
+        <div class="progress-container">
+            <h4 class="mb-3"><i class="fas fa-chart-line mr-2"></i>Your Progress</h4>
+            <div class="progress-bar">
+                <div class="progress-bar-fill" id="progressBar" style="width: 0%;"></div>
+            </div>
+            <div class="progress-stats">
+                <span id="progressText">0% Complete</span>
+                <span>Estimated time: <span id="estimatedTime">25</span> mins remaining</span>
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-sm btn-success" id="markCompleteBtn">
+                    <i class="fas fa-check-circle mr-1"></i> Mark as Complete
+                </button>
+            </div>
+        </div>
+        
+        <!-- NEW: Content Tabs -->
+        <div class="content-tabs">
+            <div class="content-tab active" data-tab="lesson-content"><i class="fas fa-book mr-2"></i>Lesson</div>
+            <div class="content-tab" data-tab="study-tools"><i class="fas fa-tools mr-2"></i>Study Tools</div>
+            <div class="content-tab" data-tab="quiz-tab"><i class="fas fa-question-circle mr-2"></i>Quiz</div>
+            <div class="content-tab" data-tab="notes-tab"><i class="fas fa-sticky-note mr-2"></i>Notes</div>
+            <div class="content-tab" data-tab="srs-tab"><i class="fas fa-sync-alt mr-2"></i>Spaced Review</div>
+        </div>
+        
+        <!-- Generate Study Materials Button - TOP POSITION -->
+        {% if lesson.content and not lesson.summary %}
+        <div class="text-center action-buttons">
+            <form action="{{ url_for('generate_study_data', lesson_id=lesson.id) }}" method="POST">
+                <button type="submit" class="btn btn-success generate-btn">
+                    <i class="fas fa-magic"></i> Generate Study Materials
+                </button>
+            </form>
+        </div>
+        {% endif %}
+        
+        <!-- Tab Content Container -->
+        <div class="tab-content-container">
+            <!-- Lesson Content Tab -->
+            <div class="tab-content active" id="lesson-content">
+                <!-- Lesson Content -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-book section-icon fa-lg"></i>
+                        <h2 class="mb-0">Lesson Content</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="formatted-content">
+                            {{ lesson.content|safe }}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Study Guide - Improved Formatting -->
+                {% if lesson.summary %}
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-lightbulb section-icon fa-lg"></i>
+                        <h2 class="mb-0">AI-Generated Study Guide</h2>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="study-guide-content">
+                            {% for paragraph in lesson.summary.split('\n\n') %}
+                                <div class="study-guide-paragraph">
+                                    {{ paragraph|replace('\n', '<br>')|safe }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- No Study Guide Message - Prompt to Generate -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-lightbulb section-icon fa-lg"></i>
+                        <h2 class="mb-0">AI-Generated Study Guide</h2>
+                    </div>
+                    <div class="card-body p-4 text-center">
+                        <div class="alert alert-info mb-4">
+                            <i class="fas fa-info-circle mr-2"></i> No study guide has been generated for this lesson yet.
+                        </div>
+                        
+                        {% if lesson.content %}
+                        <form action="{{ url_for('generate_study_data', lesson_id=lesson.id) }}" method="POST">
+                            <button type="submit" class="btn btn-success generate-btn">
+                                <i class="fas fa-magic"></i> Generate Study Materials Now
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Mind Map -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-project-diagram section-icon fa-lg"></i>
+                        <h2 class="mb-0">Mind Map</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if lesson.mind_map_url %}
+                            <div class="mind-map-container">
+                                <img src="{{ url_for('static', filename=lesson.mind_map_url.split('uploads/')[-1] if lesson.mind_map_url else '') }}" alt="Mind Map for {{ lesson.title }}" class="img-fluid">
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle mr-2"></i> No mind map available for this lesson.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Video -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-video section-icon fa-lg"></i>
+                        <h2 class="mb-0">Lesson Video</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if lesson.video_url %}
+                            <div class="embed-responsive embed-responsive-16by9 mb-3">
+                                <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{{ lesson.video_url.split('v=')[1] if 'youtube.com' in lesson.video_url else lesson.video_url }}" allowfullscreen></iframe>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle mr-2"></i> No video available for this lesson.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Tools Tab -->
+            <div class="tab-content" id="study-tools">
+                <!-- NEW: Flashcards -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-clone section-icon fa-lg"></i>
+                        <h2 class="mb-0">Flashcards</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="flashcard-nav">
+                            <button class="btn btn-outline-primary" id="prevCard"><i class="fas fa-chevron-left"></i></button>
+                            <span class="mx-3" id="cardCounter">Card 1 of 5</span>
+                            <button class="btn btn-outline-primary" id="nextCard"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div id="flashcardsContainer">
+                            <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                                <div class="flashcard-inner">
+                                    <div class="flashcard-front">
+                                        <p class="flashcard-text">What is the main purpose of the Constitution?</p>
+                                    </div>
+                                    <div class="flashcard-back">
+                                        <p class="flashcard-text">The Constitution establishes the framework for the government, defines fundamental rights, and distributes power among different branches.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <p class="text-muted"><small>Click on the card to flip it</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NEW: Pomodoro Timer -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-clock section-icon fa-lg"></i>
+                        <h2 class="mb-0">Focus Timer</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="pomodoro-container">
+                            <div class="timer-mode">
+                                <button class="btn btn-sm btn-outline-primary active" data-mode="focus">Focus (25m)</button>
+                                <button class="btn btn-sm btn-outline-success" data-mode="short-break">Short Break (5m)</button>
+                                <button class="btn btn-sm btn-outline-info" data-mode="long-break">Long Break (15m)</button>
+                            </div>
+                            <div class="timer-display" id="timerDisplay">25:00</div>
+                            <div class="timer-controls">
+                                <button class="btn btn-primary" id="startTimer"><i class="fas fa-play mr-1"></i> Start</button>
+                                <button class="btn btn-secondary" id="pauseTimer" disabled><i class="fas fa-pause mr-1"></i> Pause</button>
+                                <button class="btn btn-danger" id="resetTimer"><i class="fas fa-redo-alt mr-1"></i> Reset</button>
+                            </div>
+                            <div class="timer-status mt-3" id="timerStatus">Ready to start focusing!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Tab -->
+            <div class="tab-content" id="quiz-tab">
+                <!-- Quiz Section -->
+                <div class="section-card card">
+                    <div class="section-header">
+                        <i class="fas fa-question-circle section-icon fa-lg"></i>
+                        <h2 class="mb-0">Quiz</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if lesson.quiz_questions %}
+                            <div class="quiz-container">
+                                {% for question in lesson.quiz_questions %}
+                                    <div class="quiz-question p-3 mb-4">
+                                        <h5 class="mb-3">{{ question.text }}</h5>
+                                        <div class="options-container">
+                                            {% for option in question.options %}
+                                                <div class="quiz-option {% if option.is_correct %}correct{% endif %}">
+                                                    <div class="d-flex align-items-center">
+                                                        <span>{{ option.text }}</span>
+                                                        {% if option.is_correct %}
+                                                            <span class="ml-auto badge badge-success"><i class="fas fa-check mr-1"></i> Correct</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle mr-2"></i> No quiz available for this lesson.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div class="tab-content" id="
