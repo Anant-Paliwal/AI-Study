@@ -1,72 +1,407 @@
-{% extends "base.html" %}
-
-{% block title %}Admin Panel - ExamPrep{% endblock %}
-
-{% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
-            <div class="position-sticky pt-3">
-                <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>Administration</span>
-                </h5>
-                <ul class="nav flex-column mb-2">
-                    <li class="nav-item">
-                        <a class="sidebar-link active" href="{{ url_for('admin_panel') }}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="{{ url_for('manage_courses') }}">
-                            <i class="fas fa-graduation-cap"></i> Manage Courses
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="{{ url_for('manage_subjects', course_id=1) }}">
-                            <i class="fas fa-book"></i> Manage Subjects
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="{{ url_for('bulk_import_subjects') }}">
-                            <i class="fas fa-file-import"></i> Bulk Import
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="{{ url_for('start_mock_practice') }}">
-                            <i class="fas fa-brain"></i> Mock Practice
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="{{ url_for('practice_question') }}">
-                            <i class="fas fa-question-circle"></i> Practice Questions
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="sidebar-link" href="{{ url_for('practice_results') }}">
-                            <i class="fas fa-chart-bar"></i> Practice Results
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ExamPrep</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4e73df;
+            --secondary: #858796;
+            --success: #1cc88a;
+            --danger: #e74a3b;
+            --warning: #f6c23e;
+            --info: #36b9cc;
+            --light: #f8f9fc;
+            --dark: #5a5c69;
+            --body-bg: #f8f9fc;
+            --sidebar-bg: #4e73df;
+            --sidebar-dark: #3a5dd9;
+        }
         
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Admin Dashboard</h1>
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background: linear-gradient(180deg, var(--sidebar-bg) 10%, var(--sidebar-dark) 100%);
+            min-height: 100vh;
+            box-shadow: 0 .15rem 1.75rem 0 rgba(58, 59, 69, .15);
+            z-index: 1;
+            position: fixed;
+            width: 250px;
+            transition: width 0.3s ease;
+        }
+        
+        .sidebar-brand {
+            height: 4.375rem;
+            padding: 1.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-brand h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .sidebar-heading {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .sidebar .nav-item {
+            position: relative;
+        }
+        
+        .sidebar .nav-item .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 0.35rem;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar .nav-item .sidebar-link:hover,
+        .sidebar .nav-item .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+        
+        .sidebar .nav-item .sidebar-link i {
+            margin-right: 0.75rem;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 1.5rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .dashboard-title {
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--dark);
+        }
+        
+        /* Cards */
+        .stat-card {
+            border-radius: 0.5rem;
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-left-accent {
+            border-left: 0.25rem solid var(--primary);
+        }
+        
+        .stat-card .card-body {
+            padding: 1.25rem;
+        }
+        
+        .stat-card .card-title {
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0;
+        }
+        
+        .stat-card .icon-container {
+            font-size: 2rem;
+            color: rgba(78, 115, 223, 0.3);
+        }
+        
+        /* Tables */
+        .table-card {
+            border-radius: 0.5rem;
+            border: none;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background-color: #f8f9fc;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .table-card h4 {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .custom-table {
+            margin-bottom: 0;
+        }
+        
+        .custom-table thead th {
+            background-color: #f8f9fc;
+            border-bottom: 2px solid #e3e6f0;
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+        
+        .custom-table tbody tr {
+            border-bottom: 1px solid #e3e6f0;
+        }
+        
+        .custom-table tbody tr:hover {
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+        
+        .custom-table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--sidebar-dark);
+            border-color: var(--sidebar-dark);
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .action-btn {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 0.35rem;
+            margin-right: 0.25rem;
+        }
+        
+        .action-btn i {
+            margin-right: 0.25rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100px;
+            }
+            
+            .sidebar .nav-item .sidebar-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-item .sidebar-link i {
+                margin-right: 0;
+                font-size: 1.1rem;
+            }
+            
+            .sidebar-brand h2 {
+                font-size: 1rem;
+            }
+            
+            .main-content {
+                margin-left: 100px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                min-height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-brand">
+                <h2><i class="fas fa-graduation-cap"></i> ExamPrep</h2>
             </div>
             
+            <hr class="sidebar-divider my-0" style="border-color: rgba(255,255,255,0.15);">
+            
+            <div class="sidebar-heading mt-3">
+                Administration
+            </div>
+            
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                    <a class="sidebar-link active" href="{{ url_for('admin_panel') }}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="sidebar-link" href="{{ url_for('manage_courses') }}">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Manage Courses</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="sidebar-link" href="{{ url_for('manage_subjects', course_id=1) }}">
+                        <i class="fas fa-book"></i>
+                        <span>Manage Subjects</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="sidebar-link" href="{{ url_for('bulk_import_subjects') }}">
+                        <i class="fas fa-file-import"></i>
+                        <span>Bulk Import</span>
+                    </a>
+                </li>
+                
+                <div class="sidebar-heading mt-4">
+                    Practice
+                </div>
+                
+                <li class="nav-item">
+                    <a class="sidebar-link" href="{{ url_for('start_mock_practice') }}">
+                        <i class="fas fa-brain"></i>
+                        <span>Mock Practice</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="sidebar-link" href="{{ url_for('practice_question') }}">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Practice Questions</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="sidebar-link" href="{{ url_for('practice_results') }}">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Practice Results</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header d-flex justify-content-between align-items-center">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                    Admin Dashboard
+                </h1>
+                <div>
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-cloud-download-alt me-1"></i> Export Data
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Statistics Cards -->
             <div class="row">
-                <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card card-left-accent">
                         <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Total Courses</div>
-                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ courses|length }}</div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="card-title">Total Courses</div>
+                                    <div class="stat-value">{{ courses|length }}</div>
                                 </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                <div class="icon-container">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card" style="border-left: 0.25rem solid var(--success);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="card-title" style="color: var(--success);">Active Students</div>
+                                    <div class="stat-value">142</div>
+                                </div>
+                                <div class="icon-container" style="color: rgba(28, 200, 138, 0.3);">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card" style="border-left: 0.25rem solid var(--info);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="card-title" style="color: var(--info);">Total Subjects</div>
+                                    <div class="stat-value">65</div>
+                                </div>
+                                <div class="icon-container" style="color: rgba(54, 185, 204, 0.3);">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card" style="border-left: 0.25rem solid var(--warning);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="card-title" style="color: var(--warning);">Practice Sessions</div>
+                                    <div class="stat-value">289</div>
+                                </div>
+                                <div class="icon-container" style="color: rgba(246, 194, 62, 0.3);">
+                                    <i class="fas fa-brain"></i>
                                 </div>
                             </div>
                         </div>
@@ -74,51 +409,184 @@
                 </div>
             </div>
             
-            <h2 class="mt-4 mb-3">Course Management</h2>
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Category</th>
-                            <th>Duration</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for course in courses %}
-                        <tr>
-                            <td>{{ course.id }}</td>
-                            <td>{{ course.title }}</td>
-                            <td>{{ course.category }}</td>
-                            <td>{{ course.duration_weeks }} weeks</td>
-                            <td>
-                                <a href="{{ url_for('manage_subjects', course_id=course.id) }}" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-list"></i> Subjects
-                                </a>
-                                <a href="{{ url_for('subject_details', subject_id=course.id) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-info-circle"></i> Details
-                                </a>
-                                <a href="{{ url_for('generate_study_plan', course_id=course.id) }}" class="btn btn-sm btn-outline-secondary">
-                                    <i class="fas fa-robot"></i> Generate Plan
-                                </a>
-                                <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <!-- Course Management Table -->
+            <div class="card table-card mt-4">
+                <div class="table-header d-flex justify-content-between align-items-center">
+                    <h4>
+                        <i class="fas fa-graduation-cap me-2 text-primary"></i>
+                        Course Management
+                    </h4>
+                    <a href="{{ url_for('manage_courses') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Add New Course
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table custom-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Duration</th>
+                                <th>Students</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for course in courses %}
+                            <tr>
+                                <td>{{ course.id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar me-2 bg-light rounded p-2" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-book text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ course.title }}</div>
+                                            <small class="text-muted">Created on Jan 15, 2025</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark">{{ course.category }}</span>
+                                </td>
+                                <td>{{ course.duration_weeks }} weeks</td>
+                                <td>24</td>
+                                <td>
+                                    <span class="badge bg-success">Active</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex">
+                                        <a href="{{ url_for('manage_subjects', course_id=course.id) }}" class="btn btn-sm btn-outline-primary action-btn">
+                                            <i class="fas fa-list"></i> Subjects
+                                        </a>
+                                        <a href="{{ url_for('view_course', course_id=course.id) }}" class="btn btn-sm btn-outline-info action-btn">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                More
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ url_for('subject_details', subject_id=course.id) }}">
+                                                        <i class="fas fa-info-circle me-1"></i> Details
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="{{ url_for('generate_study_plan', course_id=course.id) }}">
+                                                        <i class="fas fa-robot me-1"></i> Generate Plan
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" href="#">
+                                                        <i class="fas fa-trash-alt me-1"></i> Delete
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
             
-            <div class="d-flex justify-content-end mt-3">
-                <a href="{{ url_for('manage_courses') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Add New Course
-                </a>
+            <!-- Quick Access Cards -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card" style="border-radius: 0.5rem; border: none; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">Recent Activity</h5>
+                            <div class="timeline">
+                                <div class="timeline-item mb-3 pb-3 border-bottom">
+                                    <div class="d-flex">
+                                        <div class="me-3 text-primary">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 fw-bold">New course added</p>
+                                            <p class="text-muted small mb-0">Advanced Mathematics was added to the catalog</p>
+                                            <small class="text-muted">2 hours ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item mb-3 pb-3 border-bottom">
+                                    <div class="d-flex">
+                                        <div class="me-3 text-success">
+                                            <i class="fas fa-user-plus"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 fw-bold">15 new students registered</p>
+                                            <p class="text-muted small mb-0">New students joined the platform</p>
+                                            <small class="text-muted">Yesterday</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="d-flex">
+                                        <div class="me-3 text-warning">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <div>
+                                            <p class="mb-0 fw-bold">System maintenance</p>
+                                            <p class="text-muted small mb-0">Scheduled maintenance completed</p>
+                                            <small class="text-muted">2 days ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card" style="border-radius: 0.5rem; border: none; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold mb-3">Quick Actions</h5>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <a href="{{ url_for('manage_courses') }}" class="btn btn-outline-primary w-100 p-3 h-100">
+                                        <i class="fas fa-plus fa-2x mb-2"></i>
+                                        <p class="mb-0">Add Course</p>
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{{ url_for('bulk_import_subjects') }}" class="btn btn-outline-success w-100 p-3 h-100">
+                                        <i class="fas fa-file-import fa-2x mb-2"></i>
+                                        <p class="mb-0">Bulk Import</p>
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{{ url_for('practice_results') }}" class="btn btn-outline-info w-100 p-3 h-100">
+                                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                        <p class="mb-0">View Reports</p>
+                                    </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="{{ url_for('start_mock_practice') }}" class="btn btn-outline-warning w-100 p-3 h-100">
+                                        <i class="fas fa-brain fa-2x mb-2"></i>
+                                        <p class="mb-0">Mock Test</p>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </main>
+            
+            <footer class="mt-5 pt-3 border-top text-center text-muted">
+                <p>© 2025 ExamPrep. All rights reserved.</p>
+            </footer>
+        </div>
     </div>
-</div>
-{% endblock %}
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
